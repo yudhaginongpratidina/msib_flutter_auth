@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -5,7 +8,7 @@ class AuthProvider extends ChangeNotifier {
   // KEY FORM STATE
   // ==============================================
   final formAuthentication = GlobalKey<FormState>();
-  StateAuth state = StateAuth.initial;
+  StateAuth authState = StateAuth.initial;
 
   // =================================================
   // CONTROLLER
@@ -23,38 +26,64 @@ class AuthProvider extends ChangeNotifier {
   var password = '';
   var uid = '';
   var messageError = '';
-  bool obscurePassword = false;
+  bool obscurePassword = true;
 
   // FUNGSI UNTUK PROSES REGISTER
   // ===========================================================
-  void processRegister(BuildContext context) {
+  void processRegister(BuildContext context) async {
     if (formAuthentication.currentState!.validate()) {
-      email = emailController.text;
-      password = passwordController.text;
+      try {
+        UserCredential result = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text);
+        User dataUser = result.user!;
+        email = emailController.text;
+        uid = dataUser.uid;
+        authState = StateAuth.success;
+        showAlertRegisterSuccess(context, uid);
+        emailController.clear();
+        passwordController.clear();
+        updateFormTitle(context);
+      } on FirebaseAuthException catch (error) {
+        authState = StateAuth.error;
+        messageError = error.message!;
+        showAlertError(context, messageError);
+      } catch (e) {
+        authState = StateAuth.error;
+        messageError = e.toString();
+        showAlertError(context, messageError);
+      }
 
-      showAlertRegisterSuccess(context);
-      emailController.clear();
-      passwordController.clear();
-      updateFormTitle(context);
+      notifyListeners();
     } else {
-      showAlertError(context);
+      showAlertFieldEmpty(context);
     }
-
-    notifyListeners();
   }
 
   // FUNGSI UNTUK PROSES LOGIN
   // ===========================================================
-  void processLogin(BuildContext context) {
+  void processLogin(BuildContext context) async {
     if (formAuthentication.currentState!.validate()) {
-      email = emailController.text;
-      password = passwordController.text;
-
-      if (email == 'admin' && password == 'admin') {
-        showAlertLoginSuccess(context);
+      try {
+        UserCredential result = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text);
+        User dataUser = result.user!;
+        email = emailController.text;
+        uid = dataUser.uid;
+        authState = StateAuth.success;
+        showAlertLoginSuccess(context, uid);
+      } on FirebaseAuthException catch (error) {
+        authState = StateAuth.error;
+        messageError = error.message!;
+        showAlertError(context, messageError);
+      } catch (e) {
+        authState = StateAuth.error;
+        messageError = e.toString();
+        showAlertError(context, messageError);
       }
     } else {
-      showAlertError(context);
+      showAlertFieldEmpty(context);
     }
     notifyListeners();
   }
@@ -64,13 +93,18 @@ class AuthProvider extends ChangeNotifier {
   void updateFormTitle(BuildContext context) {
     if (_formTitle == 'REGISTER') {
       _formTitle = 'LOGIN';
+      emailController.clear();
+      passwordController.clear();
     } else {
       _formTitle = 'REGISTER';
+      emailController.clear();
+      passwordController.clear();
     }
     notifyListeners();
   }
 
   // FUNGSI UNTUK SHOW AND HIDDEN PASSWORD
+  // ===========================================================
   void actionObscurePassword() {
     obscurePassword = !obscurePassword;
     notifyListeners();
@@ -81,35 +115,42 @@ enum StateAuth { initial, loading, success, error }
 
 // FUNGSI UNTUK POPUP ALLERT MESSAGE KETIKA REGISTER BERHASIL
 // ===========================================================
-showAlertRegisterSuccess(BuildContext context) {
+void showAlertRegisterSuccess(BuildContext context, String uuid) {
   showDialog(
     context: context,
-    builder: (context) {
+    builder: (BuildContext context) {
       return AlertDialog(
-          title: const Text('REGISTER BERHASIL'),
-          actions: [
-            ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('LOGIN'))
-          ],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(2),
-          ));
+        title: Text(
+          'BERHASIL TERDAFTAR DENGAN UUID : $uuid',
+          style: const TextStyle(fontSize: 13),
+          textAlign: TextAlign.center,
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: const Text('LOGIN'),
+          ),
+        ],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(2),
+        ),
+      );
     },
   );
 }
 
 // FUNGSI UNTUK POPUP ALLERT MESSAGE KETIKA LOGIN BERHASIL
 // ===========================================================
-showAlertLoginSuccess(BuildContext context) {
+showAlertLoginSuccess(BuildContext context, String uid) {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-          title: const Text(
-            'LOGIN BERHASIL',
+          title: Text(
+            'BERHASIL LOGIN DENGAN UUID : $uid',
+            style: const TextStyle(fontSize: 13),
             textAlign: TextAlign.center,
           ),
           actions: [
@@ -137,20 +178,68 @@ showAlertLoginSuccess(BuildContext context) {
 
 // FUNGSI UNTUK POPUP ALLERT MESSAGE KETIKA ERROR
 // ===========================================================
-showAlertError(BuildContext context) {
+void showAlertError(BuildContext context, String message) {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text('DATAMU MASIH KOSONG'),
-        actions: [
-          ElevatedButton(
+          title: Text(
+            'TERJADI ERROR : $message',
+            style: const TextStyle(fontSize: 13),
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orange,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text('Ok'))
-        ],
-      );
+              child: const Text('Ok'),
+            ),
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(2),
+          ));
+    },
+  );
+}
+
+// FUNGSI UNTUK POPUP ALLERT MESSAGE KETIKA FIELD KOSONG
+// ===========================================================
+showAlertFieldEmpty(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+          title: Text(
+            'DATAMU MASIH KOSONG',
+            textAlign: TextAlign.center,
+          ),
+          actions: [
+            Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Ok')),
+            )
+          ],
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(2),
+          ));
     },
   );
 }
