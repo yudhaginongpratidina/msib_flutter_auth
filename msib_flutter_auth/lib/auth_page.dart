@@ -1,65 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:msib_flutter_auth/controllers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
-class AuthPage extends StatelessWidget {
-  const AuthPage({Key? key});
+class AuthPage extends StatefulWidget {
+  const AuthPage({Key? key}) : super(key: key);
 
+  @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
   @override
   Widget build(BuildContext context) {
     var authProvider = context.watch<AuthProvider>();
     return Scaffold(
-      // ==============================================================
-      // APP BAR
-      // ==============================================================
       appBar: AppBar(
         leading: const Icon(Icons.lock, color: Colors.white),
         backgroundColor: Colors.orange,
-        title: Text(
+        title: const Text(
           "AUTHENTICATION",
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
       ),
-
-      // ==============================================================
-      // BODY
-      // ==============================================================
       body: Form(
         key: authProvider.formAuthentication,
         child: ListView(
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
           children: [
-            // ==================================================
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: Image.asset('assets/images/banner_auth.jpg', height: 180),
+            ),
+            // ==============================================================================================
             // FORM TITLE
-            // ==================================================
+            // ==============================================================================================
             Container(
               padding: const EdgeInsets.all(20),
               child: Column(
                 children: [
                   Text(
                     authProvider.formTitle,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 30,
+                      fontSize: 10,
                     ),
-                    textAlign: TextAlign.start,
                   ),
                 ],
               ),
             ),
-
-            // ==================================================
-            // SPACE
-            // ==================================================
             const SizedBox(
               height: 20,
             ),
 
-            // ==================================================
-            // EMAIL
-            // ==================================================
+            // ==============================================================================================
+            // INPUT EMAIL
+            // ==============================================================================================
             TextFormField(
               controller: authProvider.emailController,
               validator: (value) =>
@@ -67,16 +64,19 @@ class AuthPage extends StatelessWidget {
               decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
+                prefixIcon: Icon(
+                  Icons.email,
+                  color: Colors.orange,
+                ),
               ),
             ),
-
             const SizedBox(
               height: 20,
             ),
 
-            // ==================================================
-            // PASSWORD
-            // ==================================================
+            // ==============================================================================================
+            // INPUT PASSWORD
+            // ==============================================================================================
             TextFormField(
                 controller: authProvider.passwordController,
                 obscureText: authProvider.obscurePassword,
@@ -88,6 +88,10 @@ class AuthPage extends StatelessWidget {
                 },
                 decoration: InputDecoration(
                   labelText: 'Password',
+                  prefixIcon: const Icon(
+                    Icons.lock,
+                    color: Colors.orange,
+                  ),
                   suffixIcon: IconButton(
                       onPressed: () {
                         authProvider.actionObscurePassword();
@@ -97,23 +101,23 @@ class AuthPage extends StatelessWidget {
                           : Icons.visibility)),
                   border: const OutlineInputBorder(),
                 )),
-
-            // ==================================================
-            // SPACE
-            // ==================================================
             const SizedBox(
               height: 20,
             ),
 
-            // ==================================================
-            // BUTTON AUTHENTICATION
-            // ==================================================
+            // ==============================================================================================
+            // TOMBOL AUTHENTICATION
+            // ---------------------------------------------------------------------------------------------
+            // JIKA FORM TITLE REGISTER MAKA TOMBOL REGISTER, NAMUN
+            // JIKA FORM TITLE LOGIN MAKA TOMBOL LOGIN
+            // ==============================================================================================
             ElevatedButton(
               style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.fromLTRB(10, 15, 10, 15),
                 backgroundColor: Colors.orange,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(5),
                 ),
               ),
               onPressed: () {
@@ -128,6 +132,10 @@ class AuthPage extends StatelessWidget {
             const SizedBox(
               height: 10,
             ),
+
+            // ==============================================================================================
+            // ALTERNATIVE AUTHENTICATION
+            // ==============================================================================================
             TextButton(
               onPressed: () {
                 authProvider.updateFormTitle(context);
@@ -136,9 +144,9 @@ class AuthPage extends StatelessWidget {
                 authProvider.formTitle == 'REGISTER'
                     ? 'I have an Account'
                     : 'I Don\'t Have An Account',
-                style: TextStyle(color: Colors.orange),
+                style: const TextStyle(color: Colors.orange),
               ),
-            )
+            ),
           ],
         ),
       ),

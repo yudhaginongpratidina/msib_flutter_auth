@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "435122957245",
+    "project_id": "msib-flutter-auth",
+    "storage_bucket": "msib-flutter-auth.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435122957245:android:9ca74f4eda0d90d74600d4",
+        "android_client_info": {
+          "package_name": "com.example.msib_flutter_auth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRJJprMcarIT-5Ptw8IfMx04tRHf2upA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
