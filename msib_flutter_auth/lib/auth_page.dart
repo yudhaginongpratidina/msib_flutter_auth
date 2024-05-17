@@ -3,7 +3,7 @@ import 'package:msib_flutter_auth/controllers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 class AuthPage extends StatefulWidget {
-  const AuthPage({Key? key}) : super(key: key);
+  const AuthPage({super.key});
 
   @override
   State<AuthPage> createState() => _AuthPageState();
@@ -29,24 +29,28 @@ class _AuthPageState extends State<AuthPage> {
           padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
           children: [
             Container(
-              padding: const EdgeInsets.all(20),
-              child: Image.asset('assets/images/banner_auth.jpg', height: 180),
+              padding: const EdgeInsets.all(0),
+              child: Image.asset('assets/images/banner_auth.jpg', height: 200),
             ),
             // ==============================================================================================
             // FORM TITLE
             // ==============================================================================================
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(10),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     authProvider.formTitle,
                     style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 10,
+                      fontSize: 25,
                     ),
                   ),
+                  const Text(
+                    "Enter your email and password",
+                  )
                 ],
               ),
             ),
