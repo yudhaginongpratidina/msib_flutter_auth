@@ -16,12 +16,7 @@ class AuthProvider extends ChangeNotifier {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  String _formTitle =
-      'REGISTER'; // Menggunakan _formTitle sebagai private variable
-
-  String get formTitle =>
-      _formTitle; // Getter untuk mendapatkan nilai formTitle
-
+  var formTitle = 'REGISTER';
   var email = '';
   var password = '';
   var uid = '';
@@ -91,12 +86,11 @@ class AuthProvider extends ChangeNotifier {
   // FUNGSI UNTUK MERUBAH FORM TITLE
   // ===========================================================
   void updateFormTitle(BuildContext context) {
-    if (_formTitle == 'REGISTER') {
-      _formTitle = 'LOGIN';
-      emailController.clear();
+    if (formTitle == 'REGISTER') {
+      formTitle = 'LOGIN';
       passwordController.clear();
     } else {
-      _formTitle = 'REGISTER';
+      formTitle = 'REGISTER';
       emailController.clear();
       passwordController.clear();
     }

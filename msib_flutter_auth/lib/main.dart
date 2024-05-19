@@ -1,8 +1,8 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:msib_flutter_auth/auth_page.dart';
 import 'package:msib_flutter_auth/controllers/auth_provider.dart';
 import 'package:msib_flutter_auth/firebase_options.dart';
+import 'package:msib_flutter_auth/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
           // ===============================
           // MAIN PAGE
           // ===============================
-          home: AuthPage()),
+          home: SplashScreen()),
     );
   }
 }
